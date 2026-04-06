@@ -1,54 +1,62 @@
 # LLM Kernel Optimization on AMD MI355X
 
-This repository documents my work on low-level inference optimization for quantized LLM workloads on AMD Instinct MI355X GPUs.
+This repository is a compact case study in low-level LLM inference optimization on AMD Instinct MI355X GPUs. The work came from three kernel-focused qualifier tasks from the AMD x GPU MODE competition:
 
-The project was based on three kernel-focused workloads from the AMD x GPU MODE qualifier track:
 - MXFP4 GEMM
 - MoE MXFP4
 - Mixed MLA decode
 
-Rather than treating the work as a pure hackathon submission dump, this repository is organized as a performance-engineering case study: hypothesis-driven optimization, correctness validation, benchmark comparison, and analysis of why some approaches helped while others failed.
+The focus here is not raw submission history. It is the engineering process behind quantized inference optimization: forming narrow hypotheses, validating correctness, benchmarking on remote judge hardware, and keeping only the variants that were both safe and measurably better.
 
-## Scope
+## Results At A Glance
 
-I focused on:
-- quantized inference paths using FP8 and MXFP4
-- GPU kernel/runtime behavior on AMD MI355X
-- latency-oriented optimization for inference kernels
-- benchmark-driven iteration and rollback of weak variants
-- debugging judge/runtime issues such as stream-safety violations and hidden-eval mismatch
+| Workload | Final file | Best local safe result | Main optimization theme |
+| --- | --- | --- | --- |
+| MXFP4 GEMM | `submissions/amd-mxfp4-mm/submission_v6.py` | `~21.67 µs` geomean | Kernel-dispatch and asm-path steering |
+| MoE MXFP4 | `submissions/amd-moe-mxfp4/submission_v2.py` | `183.31 µs -> 173.75 µs` | Runtime-path tuning |
+| Mixed MLA | `submissions/amd-mixed-mla/submission_v5.py` | `179.29 µs -> 132.45 µs` | Metadata reuse and split tuning |
 
-## Final Selected Variants
+## What This Project Demonstrates
 
-The repository keeps the best safe variant I found for each workload:
+- Quantization-aware inference work using FP8 and MXFP4 paths
+- GPU runtime and kernel-dispatch reasoning on AMD hardware
+- Latency-focused optimization for inference workloads
+- Benchmark-driven engineering instead of intuition-driven tuning
+- Debugging under real platform constraints such as stream-safety failures and hidden-evaluation mismatch
 
-| Workload | Final file | Notes |
-| --- | --- | --- |
-| MXFP4 GEMM | `submissions/amd-mxfp4-mm/submission_v6.py` | Best safe kernel-dispatch variant for the GEMM task |
-| MoE MXFP4 | `submissions/amd-moe-mxfp4/submission_v2.py` | Best safe runtime-path tuning result |
-| Mixed MLA | `submissions/amd-mixed-mla/submission_v5.py` | Best safe split-tuning result after extensive follow-up experiments |
+## Technical Themes
 
-## What This Work Involved
+Across the three workloads, the work included:
 
-Across the three workloads, the optimization work included:
 - kernel dispatch tuning
 - split strategy experiments
-- metadata/workspace reuse
-- correctness validation for quantized execution
-- benchmark comparison across many candidate variants
-- investigation of native-kernel and graph-based paths
-- debugging runtime constraints from the remote evaluation environment
+- metadata and workspace reuse
+- correctness checks for quantized execution
+- graph-path and native-kernel exploration
+- rollback of variants that benchmarked worse or failed judge constraints
 
-## Why This Is Relevant to AI/LLM Engineering
+One consistent lesson was that wrapper-level tuning helps only until the main kernel becomes the bottleneck. After that point, large gains typically require changing the dominant kernel itself.
 
-This project maps directly to modern LLM inference engineering work:
-- quantization-aware execution
-- inference latency optimization
-- GPU memory and layout sensitivity
-- runtime/kernel debugging
-- performance measurement under real evaluation constraints
+## Why This Matters For AI/LLM Engineering
 
-The main lesson was that small wrapper-level tuning can help only up to a point. After that, meaningful gains usually require changing the dominant kernel itself.
+This maps directly to modern inference and ML systems work:
+
+- quantized inference execution
+- latency optimization
+- memory-layout sensitivity
+- runtime debugging
+- performance measurement under production-like constraints
+
+For AI/LLM engineering roles, this kind of project is useful because it shows systems-level reasoning beyond model APIs or notebook experimentation.
+
+## Start Here
+
+If you are reading this as a recruiter, interviewer, or collaborator, the fastest path is:
+
+1. [Benchmark summary](docs/benchmark-summary.md) for the kept variants and main performance outcomes.
+2. [Lessons learned](docs/lessons-learned.md) for the engineering takeaways.
+3. [Interview notes](docs/interview-notes.md) for the project framing and talking points.
+4. `submissions/` for the final selected code artifacts.
 
 ## Repository Layout
 
@@ -71,6 +79,6 @@ llm-kernel-optimization-amd-mi355x/
 
 ## Notes
 
-- This repository intentionally includes only the final selected variants, not every experimental file.
-- Public leaderboard ranking is not the main point of this repository. The technical process and systems-level learning are the main value.
-- If publishing publicly, it is worth double-checking the competition sharing rules before posting additional raw submission history or logs.
+- This repository intentionally keeps only the final selected variants, not every experimental file.
+- The main value is the technical process: correctness, measurement, iteration, and systems-level analysis.
+- If this repository is made public, competition sharing rules should be rechecked first.
