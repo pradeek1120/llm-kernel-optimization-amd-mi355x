@@ -51,13 +51,11 @@ For AI/LLM engineering roles, this kind of project is useful because it shows sy
 
 ## Start Here
 
-If you are reading this as a recruiter, interviewer, or collaborator, the fastest path is:
+If you are reading this as a collaborator or reviewer, the fastest path is:
 
 1. [Benchmark summary](docs/benchmark-summary.md) for the kept variants and main performance outcomes.
-2. [Job application kit](docs/job-application-kit.md) for resume, LinkedIn, and interview-ready framing.
-3. [Lessons learned](docs/lessons-learned.md) for the engineering takeaways.
-4. [Interview notes](docs/interview-notes.md) for the project framing and talking points.
-5. `submissions/` for the final selected code artifacts.
+2. [Lessons learned](docs/lessons-learned.md) for the engineering takeaways.
+3. `submissions/` for the final selected code artifacts.
 
 ## Repository Layout
 
@@ -67,8 +65,6 @@ llm-kernel-optimization-amd-mi355x/
 ├── .gitignore
 ├── docs/
 │   ├── benchmark-summary.md
-│   ├── interview-notes.md
-│   ├── job-application-kit.md
 │   └── lessons-learned.md
 └── submissions/
     ├── amd-mixed-mla/
